@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+
 import {
   Form,
   FormControl,
@@ -28,7 +30,26 @@ interface CustomProps {
   renderSkeleton?: (field: any) => React.ReactNode
 }
 
-const CustomFormField = ({ control, fieldType, name, label }: CustomProps) => {
+const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
+  const { fieldType, iconSrc, iconAlt, placeholder } = props
+
+  switch (props.fieldType) {
+    case FormFieldType.INPUT:
+      return (
+        <div className='flex rounded-md border border-dark-500 bg-dark-400'>
+          {iconSrc && (
+            <Image src={iconSrc} height={24} width={24} alt={iconAlt || 'icon'} className='ml-2' />
+          )}
+          <FormControl>
+            <Input placeholder={placeholder} {...field} className='shad-input border-0' />
+          </FormControl>
+        </div>
+      )
+  }
+}
+
+const CustomFormField = (props: CustomProps) => {
+  const { control, fieldType, name, label } = props
   return (
     <FormField
       control={control}
@@ -36,6 +57,10 @@ const CustomFormField = ({ control, fieldType, name, label }: CustomProps) => {
       render={({ field }) => (
         <FormItem className='flex-1 '>
           {fieldType !== FormFieldType.CHECKBOX && label && <FormLabel>{label}</FormLabel>}
+
+          <RenderField field={field} props={props} />
+
+          <FormMessage className='shad-error' />
         </FormItem>
       )}
     />
